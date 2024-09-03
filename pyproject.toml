@@ -6,7 +6,7 @@ build-backend = "mesonpy"
 name = 'momify'
 version = '0.0.1'
 description = 'A tool for seamlessly summarizing your boring meetings!'
-requires-python = '>=3.8'
+requires-python = '>=3.10'
 authors = [
   {name = 'Athirah Hazwani'}
 ]
