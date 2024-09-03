@@ -28,6 +28,7 @@ jobs:
       
 
       - name: Build wheels
+        shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           python -m cibuildwheel --output-dir dist/
