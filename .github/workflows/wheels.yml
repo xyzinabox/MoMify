@@ -35,5 +35,27 @@ jobs:
         env: 
           CIBW_BUILD: cp310-win_amd64
 
-      - name: Publish
-        uses: pypa/gh-action-pypi-publish@v1.9.0
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: momify
+          path: dist/
+
+  
+  publish:
+    name: >-
+      Publish Python 🐍 distribution 📦 to PyPI
+    needs:
+    - build_wheels
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v3
+      with:
+        name: momify
+        path: dist/
+    - name: Publish distribution 📦 to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
