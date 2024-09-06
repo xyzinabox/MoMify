@@ -4,9 +4,9 @@ build-backend = "mesonpy"
 
 [project]
 name = 'momify'
-version = '0.0.7'
+version = '0.0.8'
 description = 'A tool for seamlessly summarizing your boring meetings!'
-readme = {file = "README.md"}
+readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = '>=3.8'
 authors = [
   {name = 'Athirah Hazwani'}
