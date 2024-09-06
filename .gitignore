@@ -1,5 +1,6 @@
 builddir
 build
+results
 .vs
 .vscode
 *.pyc

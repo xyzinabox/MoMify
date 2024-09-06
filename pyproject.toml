@@ -11,7 +11,9 @@ authors = [
   {name = 'Athirah Hazwani'}
 ]
 dependencies = [
-  "typer"
+  "typer",
+  "transformers",
+  "accelerate"
 ]
 
 [project.scripts]

@@ -41,11 +41,9 @@ std::wstring record(wchar_t* procname) {
         printf("ERROR: Could not set control handler!\n");
         return std::wstring(L"");
     }
-    wchar_t szFileName[MAX_PATH];
-    GetModuleFileName(NULL, szFileName, MAX_PATH);
-    HRESULT hr = PathCchRemoveFileSpec(szFileName, MAX_PATH);
-    hr = PathCchCombineEx(szFileName, MAX_PATH, szFileName, L"Lib\\site-packages\\momify\\popo.wav", 0);
-    hr = loopbackCapture.StartCaptureAsync(pid, true, szFileName);
+
+    BOOL yo = CreateDirectory(L"results",NULL);
+    HRESULT hr = loopbackCapture.StartCaptureAsync(pid, true, L"results\\popo.wav");
 
     if (FAILED(hr))
     {
@@ -62,12 +60,12 @@ std::wstring record(wchar_t* procname) {
         WaitForSingleObject(ctrlCEvent, INFINITE);
 
         loopbackCapture.StopCaptureAsync();
-        
+        std::wcout << L"Stopped recording!" << std::endl;
         // Clean up the event object
         CloseHandle(ctrlCEvent);
     }
 
-    std::wstring path(szFileName);
+    std::wstring path(L"results\\popo.wav");
     return path;
 }
 

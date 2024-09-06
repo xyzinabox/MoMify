@@ -144,7 +144,7 @@ HRESULT CLoopbackCapture::CreateWAVFile()
 {
     return SetDeviceStateErrorIfFailed([&]()->HRESULT
         {
-            m_hFile.reset(CreateFile(m_outputFileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL));
+            m_hFile.reset(CreateFile(m_outputFileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL));
             RETURN_LAST_ERROR_IF(!m_hFile);
 
             // Create and write the WAV header
