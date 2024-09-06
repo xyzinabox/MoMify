@@ -12,8 +12,12 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 def momify(
     name: Annotated[str, typer.Argument(help="The name of the process that you want recorded.")],
+    output_dir: Annotated[str, typer.Option("--output-dir", "-o", help="Directory for the output of the process.")] = "results",
+    duration: Annotated[int, typer.Option("--duration", "-d", help='''Duration of recording in minutes. 
+                                          Zero indicates infinite duration''')] = 0,
 ):
-    path = record(name)
+    print(output_dir, duration)
+    path = record(name, output_dir, duration)
     print("Loading S2T Model...")
     
     from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
@@ -47,7 +51,7 @@ def momify(
     result = pipe(path)
     print(result["text"])
 
-    with open("results/text", "w") as f:
+    with open(f"{output_dir}/text", "w") as f:
         f.write(result["text"])
 
     print("Summarizing...")
