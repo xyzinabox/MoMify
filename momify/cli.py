@@ -1,6 +1,6 @@
 import typer
 
-from momify.summarize import momify
+from momify.momify import momify #momify
 
 
 app = typer.Typer()

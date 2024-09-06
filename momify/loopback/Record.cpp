@@ -26,7 +26,7 @@ BOOL WINAPI ConsoleCtrlHandler(DWORD dwCtrlType) {
 }
 
 
-std::wstring record(wchar_t* procname) {
+std::wstring record(wchar_t* procname, wchar_t* output_dir, int duration) {
 
     int pid = findProc(prepare_name(procname).c_str());
     
@@ -42,8 +42,9 @@ std::wstring record(wchar_t* procname) {
         return std::wstring(L"");
     }
 
-    BOOL yo = CreateDirectory(L"results",NULL);
-    HRESULT hr = loopbackCapture.StartCaptureAsync(pid, true, L"results\\popo.wav");
+    BOOL yo = CreateDirectory(output_dir, NULL);
+    HRESULT hr = PathCchCombineEx(output_dir, MAX_PATH, output_dir, L"popo.wav", 0);
+    hr = loopbackCapture.StartCaptureAsync(pid, true, output_dir);
 
     if (FAILED(hr))
     {
@@ -57,7 +58,8 @@ std::wstring record(wchar_t* procname) {
         std::wcout << L"Capturing audio, press Ctrl+C to stop recording..." << std::endl;
 
         // Wait for the event to be signaled by the Ctrl+C handler
-        WaitForSingleObject(ctrlCEvent, INFINITE);
+        if (duration) WaitForSingleObject(ctrlCEvent, duration*1000*60);
+        else WaitForSingleObject(ctrlCEvent, INFINITE);
 
         loopbackCapture.StopCaptureAsync();
         std::wcout << L"Stopped recording!" << std::endl;
@@ -65,7 +67,7 @@ std::wstring record(wchar_t* procname) {
         CloseHandle(ctrlCEvent);
     }
 
-    std::wstring path(L"results\\popo.wav");
+    std::wstring path(output_dir);
     return path;
 }
 
