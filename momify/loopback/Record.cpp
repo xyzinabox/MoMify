@@ -14,6 +14,7 @@ namespace py = pybind11;
 
 CLoopbackCapture loopbackCapture;
 HANDLE ctrlCEvent;
+HRESULT hr;
 
 BOOL WINAPI ConsoleCtrlHandler(DWORD dwCtrlType) {
     switch (dwCtrlType) {
@@ -26,8 +27,8 @@ BOOL WINAPI ConsoleCtrlHandler(DWORD dwCtrlType) {
 }
 
 
-std::wstring record(wchar_t* procname, wchar_t* output_dir, int duration) {
-
+std::wstring record(wchar_t* procname, int duration, wchar_t* output_dir ) {
+    
     int pid = findProc(prepare_name(procname).c_str());
     
     ctrlCEvent = CreateEvent(NULL, TRUE, FALSE, NULL);  // Manual reset, initially unsignaled
@@ -43,8 +44,9 @@ std::wstring record(wchar_t* procname, wchar_t* output_dir, int duration) {
     }
 
     BOOL yo = CreateDirectory(output_dir, NULL);
-    HRESULT hr = PathCchCombineEx(output_dir, MAX_PATH, output_dir, L"popo.wav", 0);
-    hr = loopbackCapture.StartCaptureAsync(pid, true, output_dir);
+    wchar_t path_to_wav[MAX_PATH];
+    hr = PathCchCombineEx(path_to_wav, MAX_PATH, output_dir, L"popo.wav", 0);
+    hr = loopbackCapture.StartCaptureAsync(pid, true, path_to_wav);
 
     if (FAILED(hr))
     {
@@ -58,6 +60,7 @@ std::wstring record(wchar_t* procname, wchar_t* output_dir, int duration) {
         std::wcout << L"Capturing audio, press Ctrl+C to stop recording..." << std::endl;
 
         // Wait for the event to be signaled by the Ctrl+C handler
+
         if (duration) WaitForSingleObject(ctrlCEvent, duration*1000*60);
         else WaitForSingleObject(ctrlCEvent, INFINITE);
 
@@ -67,8 +70,8 @@ std::wstring record(wchar_t* procname, wchar_t* output_dir, int duration) {
         CloseHandle(ctrlCEvent);
     }
 
-    std::wstring path(output_dir);
-    return path;
+    std::wstring path_str(path_to_wav);
+    return path_str;
 }
 
 PYBIND11_MODULE(record, m) {
