@@ -1,56 +1,37 @@
-import os
 import typer
-import logging
-import warnings
-
 from typing_extensions import Annotated
 
 from momify.loopback.record import record
-
-os.environ['USE_FLASH_ATTENTION'] = '0'
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+from momify.utils.transcribe import transcribe
 
 def momify(
     name: Annotated[str, typer.Argument(help="The name of the process that you want recorded.")],
     output_dir: Annotated[str, typer.Option("--output-dir", "-o", help="Directory for the output of the process.")] = "results",
     duration: Annotated[int, typer.Option("--duration", "-d", help='''Duration of recording in minutes. 
                                           Zero indicates infinite duration''')] = 0,
-):
-    path = record(name, duration, output_dir)
-    print("Loading S2T Model...")
+    audio_file: Annotated[str, typer.Option("--audio-file", "-a", help="Path to audio file that you want processed.")] = "",
+    text_file: Annotated[str, typer.Option("--text-file", "-t", help="Path to text file that you want summarized.")] = "",
+    record_only: Annotated[bool, typer.Option("--record-only", help="Disable transcription and summarization.")] = False,
+    no_summary: Annotated[bool, typer.Option("--no-summary", help="Disable summarization.")] = False,
+):  
     
-    from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
-    from torch.cuda import is_available
-    from torch import float16, float32
+    if text_file:
+        # SUMMARIZE
+        return
+
+    if not audio_file:
+        audio_file = record(name, duration, output_dir)
     
-    warnings.filterwarnings("ignore")
-    logging.getLogger("transformers").setLevel(logging.CRITICAL)
-
-    device = "cuda" if is_available() else "cpu"
-    torch_dtype = float16 if is_available() else float32
-    model_id = "openai/whisper-large-v3"
-
-    model = AutoModelForSpeechSeq2Seq.from_pretrained(
-        model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True
-    )
-    model.to(device)
-
-    processor = AutoProcessor.from_pretrained(model_id)
-
-    pipe = pipeline(
-        "automatic-speech-recognition",
-        model=model,
-        tokenizer=processor.tokenizer,
-        feature_extractor=processor.feature_extractor,
-        torch_dtype=torch_dtype,
-        device=device,
-        generate_kwargs={"language": "english", "forced_decoder_ids": None}
-    )
-    print("Generating text...")
-    result = pipe(path)
-    print(result["text"])
-
+    if record_only:
+        return
+    
+    text = transcribe(audio_file)
+    
     with open(f"{output_dir}/text", "w") as f:
-        f.write(result["text"])
+        f.write(text)
 
+    if no_summary:
+        return
+    
+    # SUMMARIZE
     print("Summarizing...")
