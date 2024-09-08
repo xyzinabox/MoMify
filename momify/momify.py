@@ -16,8 +16,7 @@ def momify(
     duration: Annotated[int, typer.Option("--duration", "-d", help='''Duration of recording in minutes. 
                                           Zero indicates infinite duration''')] = 0,
 ):
-    print(output_dir, duration)
-    path = record(name, output_dir, duration)
+    path = record(name, duration, output_dir)
     print("Loading S2T Model...")
     
     from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
