@@ -26,7 +26,7 @@ def momify(
         return
     
     text = transcribe(audio_file)
-    
+    print(text)
     with open(f"{output_dir}/text", "w") as f:
         f.write(text)
 
