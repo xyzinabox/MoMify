@@ -9,3 +9,4 @@ py.install_sources(
 )
 
 subdir('loopback')
+subdir('utils')
