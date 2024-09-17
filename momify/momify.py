@@ -6,7 +6,7 @@ from momify.utils import transcribe, summarize
 from pathlib import Path
 
 def momify(
-    name: Annotated[str, typer.Argument(help="The name of the process that you want recorded.")],
+    name: Annotated[str, typer.Argument(help="The name of the process that you want recorded.")] = "",
     output_dir: Annotated[str, typer.Option("--output-dir", "-o", help="Directory for the output of the process.")] = "results",
     duration: Annotated[int, typer.Option("--duration", "-d", help='''Duration of recording in minutes. 
                                           Zero indicates infinite duration''')] = 0,
@@ -44,5 +44,5 @@ def momify(
     # SUMMARIZE
     summary = summarize(text)
 
-    with open(f"{output_dir}/summary_text" "w") as f:
+    with open(f"{output_dir}/summary_text", "w") as f:
         f.write(summary)
