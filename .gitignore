@@ -6,3 +6,4 @@ results
 *.pyc
 *.wav
 dist
+*.ipynb
