@@ -2,7 +2,8 @@ import typer
 from typing_extensions import Annotated
 
 from momify.loopback.record import record
-from momify.utils import transcribe
+from momify.utils import transcribe, summarize
+from pathlib import Path
 
 def momify(
     name: Annotated[str, typer.Argument(help="The name of the process that you want recorded.")],
@@ -16,8 +17,17 @@ def momify(
 ):  
     
     if text_file:
-        # SUMMARIZE
+        with open(text_file,"r") as file:
+            text = file.read
+            
+        summary = summarize(text)
+
+        output_file = Path(output_dir) / (Path(text_file).stem + ".txt")
+
+        with open(output_file, "w") as f:
+            f.write(summary)
         return
+        
 
     if not audio_file:
         audio_file = record(name, duration, output_dir)
@@ -34,4 +44,7 @@ def momify(
         return
     
     # SUMMARIZE
-    print("Summarizing...")
+    summary = summarize(text)
+
+    with open(f"{output_dir}/summary_text" "w") as f:
+        f.write(summary)
